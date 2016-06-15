@@ -145,20 +145,14 @@
     //
     // test if a specific major diagonal on this board contains a conflict
     hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow) {
-      var n = this.get('n');
-      var that = this;
       var count = 0;
-      var helper = function(rowCheck, column) {
+      var that = this;
+      
 
-        if (rowCheck === n || column === n) {
-          return;
-        }
-
-        count += column < 0 ? 0 : that.get(rowCheck)[column];        
-        helper(rowCheck + 1, column + 1);
-      };
-
-      helper(0, majorDiagonalColumnIndexAtFirstRow);
+      this.helperFn(0, majorDiagonalColumnIndexAtFirstRow, (function(nRow, nColumn){
+        count += nColumn < 0 ? 0 : this.get(nRow)[nColumn];        
+        this.helperFn(nRow + 1, nColumn + 1);
+      }).bind(this));
       return count > 1 ? true : false;
     },
 
@@ -172,6 +166,16 @@
       }
 
       return false;
+    },
+
+    helperFn: function(nRow, nColumn, fn) {
+      var n = this.get('n');
+        
+      if (nRow === n || nColumn === n) {
+        return;
+      }
+
+      return fn(nRow, nColumn);
     },
 
 
